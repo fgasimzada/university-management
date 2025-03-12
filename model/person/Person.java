@@ -1,5 +1,6 @@
 package model.person;
 
+import java.security.InvalidAlgorithmParameterException;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -11,16 +12,20 @@ public abstract class Person {
     private String email;
     private final LocalDate dateOfBirth;
 
-    protected Person(int id, String fullName, String address, String phone, String email, LocalDate dateOfBirth) {
+    protected Person(int id, String fullName, String address, String phone, String email, LocalDate dateOfBirth) throws InvalidAlgorithmParameterException{
+        if(id < 0) throw new InvalidAlgorithmParameterException("ID cannot be negative!");
         this.id = id;
         this.fullName = fullName;
         this.address = address;
         this.phone = phone;
+        if(phone.charAt(0) != '+') throw new InvalidAlgorithmParameterException("Phone should contain country code!");
+        if(!email.contains("@")) throw new InvalidAlgorithmParameterException("Email is invalid!");
         this.email = email;
         this.dateOfBirth = dateOfBirth;
     }
 
-    protected Person(int id, String fullName, LocalDate dateOfBirth) {
+    protected Person(int id, String fullName, LocalDate dateOfBirth) throws InvalidAlgorithmParameterException{
+        if(id < 0) throw new InvalidAlgorithmParameterException("ID cannot be negative!");
         this.id = id;
         this.fullName = fullName;
         this.dateOfBirth = dateOfBirth;
@@ -31,7 +36,9 @@ public abstract class Person {
     public String getFullName() { return fullName; }
     public String getAddress() { return address; }
     public String getPhone() { return phone; }
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
     public LocalDate getDateOfBirth() { return dateOfBirth; }
     public int getAge() {
         LocalDate today = LocalDate.now();
@@ -40,8 +47,14 @@ public abstract class Person {
     }
     // Setters
     public void setAddress(String address) { this.address = address; }
-    public void setPhone(String phone) { this.phone = phone; }
-    public void setEmail(String email) { this.email = email; }
+    public void setPhone(String phone) throws InvalidAlgorithmParameterException {
+        if(phone.charAt(0) != '+') throw new InvalidAlgorithmParameterException("Phone should contain country code!");
+        this.phone = phone;
+    }
+    public void setEmail(String email) throws InvalidAlgorithmParameterException { 
+        if(!email.contains("@")) throw new InvalidAlgorithmParameterException("Email is invalid!");
+        this.email = email;
+    }
 
     @Override
     public boolean equals(Object o) {
